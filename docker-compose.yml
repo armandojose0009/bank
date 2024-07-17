@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: test 
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "6001:6001" 
+    depends_on:
+      - mysql
+    volumes:
+      - build_volume:/app/target
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+
+volumes:
+  mysql_data:
+    driver: local
+  build_volume:
+    driver: local
